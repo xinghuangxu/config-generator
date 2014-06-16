@@ -1,11 +1,20 @@
 package org.netapp.epg;
 
-/**
- * Hello world!
- * 
- */
+//Import log4j classes.
+import org.apache.log4j.Logger;
+import org.apache.log4j.BasicConfigurator;
+
 public class App {
+	
+	// Define a static logger variable so that it references the
+	// Logger instance named "MyApp".
+   static Logger logger = Logger.getLogger(App.class);
 	public static void main(String[] args) {
+		
+		 // Set up a simple configuration that logs on the console.
+	     BasicConfigurator.configure();
+	     
+	     
 		String baseDirs="";
 		for(int i=0;i<args.length;i++){
 			if(args[0]=="-b"){

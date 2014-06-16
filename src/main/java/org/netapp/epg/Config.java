@@ -5,8 +5,14 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggerFactory;
+import org.netapp.epg.qa.QaReportCollection;
+
 
 public class Config {
+	public static final Logger LOG= Logger.getLogger("NetApp.Epg.Sonar.ConfigGenerator");
+	
 	private List<String> baseDirectories;
 	private static List<String> sourceDirectories;
 	
@@ -15,6 +21,10 @@ public class Config {
 	
 	private String boxcarMapFilePath="config/boxcar-mapping.csv";
 	private BoxcarMap boxcarMap;
+	
+	private String qaTestsFolder="config/qa-test-reports";
+	private QaReportCollection qrc;
+	
 	
 	private static String sonarRunnerPath;
 
@@ -74,6 +84,12 @@ public class Config {
 
 
 	public void generateProperties() {
+		//read in the qa tests report
+		qrc=new QaReportCollection(this.qaTestsFolder);
+		qrc.makeFolder(baseDirectories.get(0));
+		qrc.generateTestReport(baseDirectories.get(0));
+		
+		//generate the folder structure
 		Folder root=null;
 		for(int i=0;i<baseDirectories.size();i++){
 			root=new Folder(); //generate the folder trees
@@ -84,6 +100,7 @@ public class Config {
 			}
 		}
 		System.out.println("Folder Initialized!");
+		
 		
 		//read in ccg mapping
 		ccgMap=new CCGMap(this.ccgMapFilePath);
