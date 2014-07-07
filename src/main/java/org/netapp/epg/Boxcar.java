@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.netapp.epg.qa.QaReportCollection;
+
 public class Boxcar {
 	
 	private String CQID;
@@ -58,15 +60,18 @@ public class Boxcar {
 			writer.println("sonar.sourceEncoding=UTF-8");
 			
 			
+			//writer.println("sonar.projectBaseDir=../../../Application");
 			StringBuilder modules=new StringBuilder();
 			StringBuilder sb=new StringBuilder();
 			Iterator<Entry<String, CCG>> it=ccgs.entrySet().iterator();
+			boolean once=true;
 			while(it.hasNext()){
 				CCG c=it.next().getValue();
 				it.remove();
 				modules.append(c.getName()+",");
 				sb.append(c.getName()+".sonar.projectBaseDir="+c.getName()+"\n");
-				c.generateSonarProperty(projectKey,file.getParent()+"/"+c.getName()+"/sonar-project.properties","../../../../",this.getName());
+				c.generateSonarProperty(projectKey,file.getParent()+"/"+c.getName()+"/sonar-project.properties","../../../../",this.getName(),once,this.getName());
+				if(once)once=!once;
 			}
 			writer.println("sonar.modules="+modules.toString().substring(0,modules.length()-1));
 			writer.println(sb.toString());

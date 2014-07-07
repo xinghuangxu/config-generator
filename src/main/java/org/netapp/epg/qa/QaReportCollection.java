@@ -8,7 +8,7 @@ import java.util.List;
 
 public class QaReportCollection {
 	
-	private List<QaReport> qaReports=new ArrayList<QaReport>();
+	private static List<QaReport> qaReports=new ArrayList<QaReport>();
 	
 	private static String folderName="sonar-qa-tests";
 	
@@ -35,6 +35,19 @@ public class QaReportCollection {
 		for(int i=0;i<qaReports.size();i++){
 			qaReports.get(i).generateTestReport(basePath+"/"+folderName);
 		}
+	}
+
+	public static String getTestBaseFolder() {
+		return folderName;
+	}
+
+	public static String hasTestFor(String name) {
+		for(int i=0;i<qaReports.size();i++){
+			if(name.indexOf(qaReports.get(i).getName())!=-1){
+				return qaReports.get(i).getName();
+			}
+		}
+		return "";
 	}
 	
 	

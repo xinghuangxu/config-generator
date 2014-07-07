@@ -69,16 +69,21 @@ public class BoxcarMap {
 			writer.println(sb.toString());
 			writer.println("sonar.coverity.source.path=" + baseDir.getParent());
 			writer.close();
-			generateScript(sonarRunnerScript);
+			generateScript(sonarRunnerScript,baseDir.getParent().toString());
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
 		}
 	}
 
-	private void generateScript(String sonarRunnerScript) throws FileNotFoundException {
+	private void generateScript(String sonarRunnerScript,String basePath) throws FileNotFoundException {
 		File scriptFile=new File(sonarRunnerScript);
 		PrintWriter writer=new PrintWriter(scriptFile);
 		writer.print("for dir in boxcar/*; do (cd \"$dir\" && sh "+Config.getSonnarRunnerPath()+"); done");
+		writer.close();
+		
+		File localScript =new File("boxcar-run.sh");
+		writer=new PrintWriter(localScript);
+		writer.println("cd "+basePath+"/sonar && sh boxcar-run.sh");
 		writer.close();
 	}
 

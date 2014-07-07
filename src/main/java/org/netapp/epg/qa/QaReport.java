@@ -54,4 +54,8 @@ public class QaReport extends QaGeneric{
 		}
 	}
 
+	public String getName() {
+		return name;
+	}
+
 }

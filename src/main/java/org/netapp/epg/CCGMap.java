@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import sun.security.krb5.internal.LocalSeqNumber;
+
 public class CCGMap {
 	private List<CCG> ccgs;
 	
@@ -58,28 +60,34 @@ public class CCGMap {
 			writer.println("sonar.sourceEncoding=UTF-8");
 			StringBuilder modules=new StringBuilder();
 			StringBuilder sb=new StringBuilder();
+			boolean once=true;
 			for(CCG c : ccgs){
 				if(!c.isEmpty()){
 					modules.append(c.getName()+",");
 					sb.append(c.getName()+".sonar.projectBaseDir="+c.getName()+"\n");
-					c.generateSonarProperty(projectKey,projectFile.getParent()+"/"+c.getName()+"/sonar-project.properties","../../../","coverage");
+					c.generateSonarProperty(projectKey,projectFile.getParent()+"/"+c.getName()+"/sonar-project.properties","../../../","coverage",once,"RAIDCore_Kingston");
+					once=false;
 				}
 			}
 			writer.println("sonar.modules="+modules.toString().substring(0,modules.length()-1));
 			writer.println(sb.toString());
 			writer.println("sonar.coverity.source.path="+baseDir.getParent());
 			writer.close();
-			generateScript(sonarRunnerScript);
+			generateScript(sonarRunnerScript,baseDir.getParent().toString());
 		}catch(Exception ex){
 			System.out.println(ex.getMessage());
 		}
 		
 	}
 
-	private void generateScript(String sonarRunnerScript) throws FileNotFoundException {
+	private void generateScript(String sonarRunnerScript,String basePath) throws FileNotFoundException {
 		File scriptFile=new File(sonarRunnerScript);
 		PrintWriter writer=new PrintWriter(scriptFile);
 		writer.print("cd ccg && sh "+Config.getSonnarRunnerPath());
+		writer.close();
+		File localScript =new File("ccg-run.sh");
+		writer=new PrintWriter(localScript);
+		writer.println("cd "+basePath+"/sonar && sh ccg-run.sh");
 		writer.close();
 	}
 }

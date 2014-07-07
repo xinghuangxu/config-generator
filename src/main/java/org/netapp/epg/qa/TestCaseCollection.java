@@ -6,13 +6,15 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class TestCaseCollection {
+public class TestCaseCollection extends QaGeneric{
 	
 	private HashMap<String, TestCase> testcaseMap=new HashMap<String, TestCase>();
 
 	public void add(String[] words, int i) {
 		if(!testcaseMap.containsKey(words[i])){
 			testcaseMap.put(words[i], new TestCase(words,i));
+		}else{
+			LOG.info("Duplication!"+words[i]);
 		}
 	}
 

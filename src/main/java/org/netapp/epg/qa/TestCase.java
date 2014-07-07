@@ -52,12 +52,10 @@ public class TestCase extends QaGeneric{
 
 	public void generateTestReport(String classname, PrintWriter writer) {
 		writer.println("<testcase classname=\""+classname+"/"+this.name+".cc\" name=\""+this.name+"\" time=\""+this.duration+"\">");
-		if(!this.run){
-			writer.println("<skipped message=\"This test has been skipped.\"></skipped>");
-		}else if(this.failed){
+		if(this.failed){
 			writer.println("<failure message=\"This test has failed.\"></failure>");
-		}else if(this.run&&!this.passed){
-			writer.println("<error message=\"Errors occur while running.\"></error>");
+		}else if(!this.passed){
+			writer.println("<skipped message=\"This test has been skipped.\"></skipped>");
 		}
 		writer.println("</testcase>");
 	}
