@@ -35,21 +35,17 @@ public class CCG {
 		return true;
 	}
 
-	public void generateSonarProperty(String projectKey,String fileName, String level, String codeCoverageReportPath, boolean isWithTest,String name) {
+	public boolean generateSonarProperty(String projectKey,String fileName, String level, String codeCoverageReportPath, boolean isWithTest,String name) {
 		File file=new File(fileName);
 		file.getParentFile().mkdirs();
 		try{
 			PrintWriter writer=new PrintWriter(file);
 			writer.println("sonar.projectKey="+this.getName());
 			writer.println("sonar.projectName="+this.getName());
-			writer.println("sonar.projectVersion="+projectKey.substring(projectKey.length()-5));
+			writer.println("sonar.projectVersion="+projectKey.substring(projectKey.length()));
 			writer.println("sonar.language=c++");
 			writer.println("sonar.sourceEncoding=UTF-8");
 			
-			writer.println("sonar.cxx.indluceDirectories="+level+"Application/RAIDLib");
-			writer.println("sonar.cxx.suffixes.sources=.cpp,.cc,.c");
-			writer.println("sonar.cxx.suffixes.headers=.h,.hh,.hpp");
-			writer.println("sonar.cxx.coverage.reportPath="+codeCoverageReportPath+".xml");
 			
 			StringBuilder modules=new StringBuilder();
 			StringBuilder moduleInfos=new StringBuilder();
@@ -58,6 +54,7 @@ public class CCG {
 				if(!c.isEmpty()){
 					if(isWithTest&&once){
 						//test folder config
+						/*
 						writer.print(c.getName()+".sonar.tests=IMT");
 						String qaTestName=QaReportCollection.hasTestFor(name);
 						if(qaTestName!=""){
@@ -66,14 +63,19 @@ public class CCG {
 							System.out.println("Test Config output to: "+this.getName()+": " + c.getName());
 						}else{
 							writer.println();
-						}
+						}*/
 						//end test folder config
 						once=false;
 					}
 					modules.append(c.getName()+",");
-					moduleInfos.append(c.getName()+".sonar.projectBaseDir="+level+"Application"+"\n");
+					moduleInfos.append(c.getName()+".sonar.projectBaseDir="+level+"\n");
 					moduleInfos.append(c.getName()+".sonar.sources="+c.getSources()+"\n");
 				}
+			}
+			if(modules.length()==0){
+				System.out.println("Empty CCG: Generate Property File for CCG: "+this.getName());
+				writer.close();
+				return false;
 			}
 			writer.println("sonar.modules="+modules.toString().substring(0,modules.length()-1));
 			writer.println(moduleInfos.toString());
@@ -82,5 +84,6 @@ public class CCG {
 		}catch(Exception ex){
 			System.out.println("Generate Property File "+this.getName()+" Failed."+ex.getMessage());
 		}
+		return true;
 	}
 }

@@ -1,0 +1,1 @@
+SELECT assetabbr , c.compname FROM `CFW-Employee`.assets as a, components as c WHERE a.assetid=c.assetid AND assetabbr IS NOT NULL  ORDER BY assetabbr, compname;

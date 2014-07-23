@@ -1,4 +1,4 @@
-package org.netapp.epg;
+package org.netapp.epg.duplication;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -6,8 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Folder {
+import org.netapp.epg.Component;
 
+public class Folder {
+	
 	private static Map<String, List<Folder>> dic = new HashMap<String, List<Folder>>();
 	private String path;
 	private String name;

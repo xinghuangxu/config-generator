@@ -8,46 +8,51 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.netapp.epg.db.CFWEmployeeDb;
+
 import sun.security.krb5.internal.LocalSeqNumber;
 
 public class CCGMap {
 	private List<CCG> ccgs;
 	
 	public CCGMap(String filePath) {
-		ccgs=new ArrayList<CCG>();
-		try {
-			System.out.println("Read Config File.");
-			BufferedReader br = new BufferedReader(new FileReader(filePath));
-			System.out.println("Read ccg-map.");
-			br.readLine();
-			String line = br.readLine();
-			String[] row=line.split(",");
-			CCG nccg=new CCG(row[0]);
-			Component ncomponent=new Component(row[1]);
-			ncomponent.setFolders(Folder.getMap().get(ncomponent.getName()));
-			nccg.addComponent(ncomponent);
-			while((line=br.readLine())!=null){
-				row=line.split(",");
-				if(!nccg.getName().equals(row[0])){
-					ccgs.add(nccg);
-					nccg=new CCG(row[0]);
-				}
-				ncomponent=new Component(row[1]);
-				ncomponent.setFolders(Folder.getMap().get(ncomponent.getName()));
-				nccg.addComponent(ncomponent);
-			}
-			ccgs.add(nccg);
-			br.close();
-		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
-		}
+		//ccgs=new ArrayList<CCG>();
+		
+		CFWEmployeeDb dao = new CFWEmployeeDb();
+		ccgs=dao.readCcgCompData();
+//		try {
+//			System.out.println("Read Config File.");
+//			BufferedReader br = new BufferedReader(new FileReader(filePath));
+//			System.out.println("Read ccg-map.");
+//			br.readLine();
+//			String line = br.readLine();
+//			String[] row=line.split(",");
+//			CCG nccg=new CCG(row[0]);
+//			Component ncomponent=new Component(row[1]);
+//			ncomponent.setFolders(Folder.getMap().get(ncomponent.getName()));
+//			nccg.addComponent(ncomponent);
+//			while((line=br.readLine())!=null){
+//				row=line.split(",");
+//				if(!nccg.getName().equals(row[0])){
+//					ccgs.add(nccg);
+//					nccg=new CCG(row[0]);
+//				}
+//				ncomponent=new Component(row[1]);
+//				ncomponent.setFolders(Folder.getMap().get(ncomponent.getName()));
+//				nccg.addComponent(ncomponent);
+//			}
+//			ccgs.add(nccg);
+//			br.close();
+//		} catch (Exception ex) {
+//			System.out.println(ex.getMessage());
+//		}
 	}
 
 	public void generate(Folder root) {
 		System.out.println("Generate ccg level sonar properties.");
 		File baseDir=new File(root.getPath());
-		String projectFilePath=baseDir.getPath()+"/../sonar/ccg/sonar-project.properties";
-		String sonarRunnerScript=baseDir.getPath()+"/../sonar/ccg-run.sh";
+		String projectFilePath=baseDir.getPath()+"/sonar/ccg/sonar-project.properties";
+		String sonarRunnerScript=baseDir.getPath()+"/sonar/ccg-run.sh";
 		File projectFile=new File(projectFilePath);
 		projectFile.getParentFile().mkdirs();
 		try{
@@ -71,7 +76,7 @@ public class CCGMap {
 			}
 			writer.println("sonar.modules="+modules.toString().substring(0,modules.length()-1));
 			writer.println(sb.toString());
-			writer.println("sonar.coverity.source.path="+baseDir.getParent());
+			writer.println("sonar.coverity.source.path="+baseDir);
 			writer.close();
 			generateScript(sonarRunnerScript,baseDir.getParent().toString());
 		}catch(Exception ex){

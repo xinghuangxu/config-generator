@@ -1,46 +1,50 @@
 package org.netapp.epg;
 
-import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.netapp.epg.db.CFWEmployeeDb;
 
 public class BoxcarMap {
 
 	private List<Boxcar> boxcars;
 
-	public BoxcarMap(String filePath) {
+	public BoxcarMap(String filePath) throws Exception {
 		boxcars = new ArrayList<Boxcar>();
-		try {
-			System.out.println("Read Boxcar Mapping File.");
-			BufferedReader br = new BufferedReader(new FileReader(filePath));
-			String line = br.readLine();
-			while ((line = br.readLine()) != null) {
-				String[] cells = line.split(",");
-				if (cells.length > 2) {
-					Boxcar bc = new Boxcar(cells[0], cells[1]);
-					for (int i = 2; i < cells.length; i++) {
-						bc.addSource(cells[i].replace("\"", ""));
-					}
-					boxcars.add(bc);
-				}
-			}
-			br.close();
-			System.out.println("Successfully Parsed Boxcar Mapping File.");
-		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
-		}
+		//Database connect test
+		CFWEmployeeDb dao = new CFWEmployeeDb();
+		boxcars=dao.readBoxcarCompData();
+//		try {
+//			System.out.println("Read Boxcar Mapping File.");
+//			BufferedReader br = new BufferedReader(new FileReader(filePath));
+//			String line = br.readLine();
+//			while ((line = br.readLine()) != null) {
+//				String[] cells = line.split(",");
+//				if (cells.length > 2) {
+//					Boxcar bc = new Boxcar(cells[0], cells[1]);
+//					for (int i = 2; i < cells.length; i++) {
+//						bc.addSource(cells[i].replace("\"", ""));
+//					}
+//					boxcars.add(bc);
+//				}
+//			}
+//			br.close();
+//			System.out.println("Successfully Parsed Boxcar Mapping File.");
+//		} catch (Exception ex) {
+//			System.out.println(ex.getMessage());
+//		}
 	}
 
 	public void generate(Folder root) {
 		System.out.println("Generate Boxcar level sonar properties.");
 		File baseDir = new File(root.getPath());
 		String projectFilePath = baseDir.getPath()
-				+ "/../sonar/boxcar/sonar-project.properties";
-		String sonarRunnerScript=baseDir.getPath()+"/../sonar/boxcar-run.sh";
+				+ "/sonar/boxcar/sonar-project.properties";
+		String sonarRunnerScript=baseDir.getPath()+"/sonar/boxcar-run.sh";
 		File projectFile = new File(projectFilePath);
 		projectFile.getParentFile().mkdirs();
 		try {
