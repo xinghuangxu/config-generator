@@ -158,4 +158,9 @@ public class Config {
 		// boxcar script
 	}
 
+
+	public static File getRoot() {
+		return new File(Config.getBaseDir());
+	}
+
 }

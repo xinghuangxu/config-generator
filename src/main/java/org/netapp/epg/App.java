@@ -22,7 +22,6 @@ public class App {
 		}
 		Config config = Config.getInstance(baseDir);
 		
-		
 		//Config.LOG.info("Start Reducing the code base.");
 		//ProductCollection.deduplicate();
 		
@@ -36,5 +35,7 @@ public class App {
 		// level=args[1];
 		// }
 		config.generateProperties();
+		SonarRunner.runCcg(Config.getBaseDir());
+		System.exit(0);
 	}
 }

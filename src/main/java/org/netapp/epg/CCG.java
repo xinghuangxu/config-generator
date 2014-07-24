@@ -42,7 +42,7 @@ public class CCG {
 			PrintWriter writer=new PrintWriter(file);
 			writer.println("sonar.projectKey="+this.getName());
 			writer.println("sonar.projectName="+this.getName());
-			writer.println("sonar.projectVersion="+projectKey.substring(projectKey.length()));
+			//writer.println("sonar.projectVersion="+projectKey.substring(projectKey.length()));
 			writer.println("sonar.language=c++");
 			writer.println("sonar.sourceEncoding=UTF-8");
 			
@@ -54,19 +54,19 @@ public class CCG {
 				if(!c.isEmpty()){
 					if(isWithTest&&once){
 						//test folder config
-						/*
-						writer.print(c.getName()+".sonar.tests=IMT");
-						String qaTestName=QaReportCollection.hasTestFor(name);
-						if(qaTestName!=""){
-							writer.println(","+QaReportCollection.getTestBaseFolder()+"/"+qaTestName);
-							writer.println(c.getName()+".sonar.qa.reportPath="+QaReportCollection.getTestBaseFolder()+"/"+qaTestName+".xml");
-							System.out.println("Test Config output to: "+this.getName()+": " + c.getName());
-						}else{
-							writer.println();
-						}*/
+//						writer.print(c.getName()+".sonar.tests=IMT");
+//						String qaTestName=QaReportCollection.hasTestFor(name);
+//						if(qaTestName!=""){
+//							writer.println(","+QaReportCollection.getTestBaseFolder()+"/"+qaTestName);
+//							writer.println(c.getName()+".sonar.qa.reportPath="+QaReportCollection.getTestBaseFolder()+"/"+qaTestName+".xml");
+//							System.out.println("Test Config output to: "+this.getName()+": " + c.getName());
+//						}else{
+//							writer.println();
+//						}
 						//end test folder config
 						once=false;
 					}
+					c.deduplicate();
 					modules.append(c.getName()+",");
 					moduleInfos.append(c.getName()+".sonar.projectBaseDir="+level+"\n");
 					moduleInfos.append(c.getName()+".sonar.sources="+c.getSources()+"\n");

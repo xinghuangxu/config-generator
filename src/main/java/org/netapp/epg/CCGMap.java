@@ -60,7 +60,7 @@ public class CCGMap {
 			String projectKey=baseDir.getParentFile().getName();
 			writer.println("sonar.projectKey=epg.netapp.com:"+projectKey+".CCG");
 			writer.println("sonar.projectName=RAIDCore_Kingston");//_CCG_"+projectKey);
-			writer.println("sonar.projectVersion="+projectKey.substring(projectKey.length()-5));
+			writer.println("sonar.projectVersion="+root.getName());
 			writer.println("sonar.language=c++");
 			writer.println("sonar.sourceEncoding=UTF-8");
 			StringBuilder modules=new StringBuilder();

@@ -55,7 +55,7 @@ public class BoxcarMap {
 			writer.println("sonar.projectName=RAIDCore_Kingston_Boxcar_"
 					+ projectKey);
 			writer.println("sonar.projectVersion="
-					+ projectKey.substring(projectKey.length() - 5));
+					+ root.getName());
 			writer.println("sonar.language=c++");
 			writer.println("sonar.sourceEncoding=UTF-8");
 			StringBuilder modules = new StringBuilder();

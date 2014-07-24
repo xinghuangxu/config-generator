@@ -33,10 +33,11 @@ public class Folder {
 	public String getName(){
 		return this.name;
 	}
+	
 
 	public void setPath(String path) {
 		this.path = path;
-		this.name = path.substring(path.lastIndexOf('/') + 1);
+		this.name = new File(path).getName();//path.substring(path.lastIndexOf('\\') + 1);
 		if(dic.get(this.name)==null){
 			dic.put(this.name, new ArrayList<Folder>());
 		}

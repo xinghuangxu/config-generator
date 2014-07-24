@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.netapp.epg.duplication.Deduplicator;
+
 public class Component {
 	
 	private static Map<String, Component> dic = new HashMap<String, Component>(); //easy look up
@@ -64,10 +66,14 @@ public class Component {
 		return false;
 	}
 
+	/*
+	 * Get component sources 
+	 * like: 26x0/Application/RAID1/cmd,2701/Application/RAID1/cmd,5468/Application/RAID1/cmd,5501/Application/RAID1/cmd
+	 */
 	public String getSources() {
 		StringBuilder sb=new StringBuilder();
 		for(Folder f: folders){
-			sb.append(f.getRelativePath("RAIDCore")+",");
+			sb.append(f.getRelativePath(Config.getRoot().getName())+",");
 		}
 		return sb.toString().substring(0,sb.length()-1);
 	}
@@ -76,6 +82,9 @@ public class Component {
 		return folders;
 	}
 	
-	
+	public void deduplicate(){
+		Deduplicator dp=new Deduplicator(folders);
+		dp.deduplicate();
+	}
 
 }
