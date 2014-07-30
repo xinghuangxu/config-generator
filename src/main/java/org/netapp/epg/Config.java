@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class Config {
 			.getLogger("NetApp.Epg.Sonar.ConfigGenerator");
 
 	private List<String> baseDirectories;
+
 	private static List<String> sourceDirectories;
 
 	private String ccgMapFilePath = "config/ccg-map.csv";
@@ -26,34 +28,34 @@ public class Config {
 	private String qaTestsFolder = "config/qa-test-reports";
 	private QaReportCollection qrc;
 
-	private static String sonarRunnerPath;
-	
-	private static Config config=null;
-	
-	
+	private static String sonarHostUrl;
+	private static String sonarJdbcUrl;
+
+	private static Config config = null;
+
 	private String baseDir;
-	
-	public static String getBaseDir(){
-		Config config=Config.getInstance();
+
+	public static String getBaseDir() {
+		Config config = Config.getInstance();
 		return config.baseDir;
 	}
-	
-	
-	public static Config getInstance(){
+
+	public static Config getInstance() {
 		return config;
 	}
-	
-	public static Config getInstance(String baseDir){
-		if(config==null){
-			config=new Config(baseDir);
+
+	public static Config getInstance(String baseDir) {
+		if (config == null) {
+			config = new Config(baseDir);
 		}
 		return config;
 	}
 
 	/*
-	 * Create a config object from reading in the 'config.sonar' file at the root directory of the application
+	 * Create a config object from reading in the 'config.sonar' file at the
+	 * root directory of the application
 	 */
-	private Config(String basedir) { 
+	private Config(String basedir) {
 		baseDirectories = new ArrayList<String>();
 		sourceDirectories = new ArrayList<String>();
 		try {
@@ -67,42 +69,49 @@ public class Config {
 			System.out.println("Read Base Directory Config.");
 			String line = br.readLine();
 			String par;
-			String src="";
-			String[] dirs=null;
+			String src = "";
+			String[] dirs = null;
 			if (basedir != "") {
 				this.baseDir = basedir;
 			} else {
-				par = line.substring(line.indexOf(':') + 1);
+				par = line.substring(line.indexOf('=') + 1);
 				this.baseDir = par;
 			}
-			if (basedir!=null) {
-				src=basedir;
+			if (basedir != null) {
+				src = basedir;
 				File file = new File(src);
 				dirs = file.list(new FilenameFilter() {
 					@Override
 					public boolean accept(File current, String name) {
-						if(name.equals("sonar"))return false;
+						if (name.equals("sonar"))
+							return false;
 						return new File(current, name).isDirectory();
 					}
 				});
 			}
 			for (int i = 0; i < dirs.length; i++) {
-				baseDirectories.add(src+"/"+dirs[i]+"/Application");
+				baseDirectories.add(src + "/" + dirs[i] + "/Application");
 			}
 
 			// read in the source
 			String[] r;
 			System.out.println("Read Source Directories.");
 			line = br.readLine();
-			r = line.split(":");
+			r = line.split("=");
 			dirs = r[1].split(",");
 			for (int i = 0; i < dirs.length; i++) {
 				sourceDirectories.add(dirs[i]);
 			}
 
 			line = br.readLine();
-			r = line.split(":");
-			this.sonarRunnerPath = r[1];
+			r = line.split("=");
+			this.sonarHostUrl = r[1];
+
+			line = br.readLine();
+			r = line.split("=");
+			this.sonarJdbcUrl = r[1];
+
+			this.writeToSonarConfig();
 
 			br.close();
 		} catch (Exception ex) {
@@ -111,8 +120,26 @@ public class Config {
 
 	}
 
-	public static String getSonnarRunnerPath() {
-		return sonarRunnerPath;
+	private void writeToSonarConfig() {
+		try {
+			File confFile = new File(
+					"sonar-runner/conf/sonar-runner.properties");
+			PrintWriter writer = new PrintWriter(confFile);
+			writer.println("sonar.host.url= " + Config.getSonarHostUrl());
+			writer.println("sonar.jdbc.url= " + Config.getSonarJdbcUrl());
+			writer.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	}
+
+	public static String getSonarJdbcUrl() {
+		return sonarJdbcUrl;
+	}
+
+	public static String getSonarHostUrl() {
+		return sonarHostUrl;
 	}
 
 	public static List<String> getSourceDirectories() {
@@ -120,17 +147,14 @@ public class Config {
 	}
 
 	public void generateProperties() throws Exception {
-		// read in the qa tests report
-		qrc = new QaReportCollection(this.qaTestsFolder);
-		qrc.makeFolder(baseDirectories.get(0));
-		qrc.generateTestReport(baseDirectories.get(0));
 
 		// generate the folder structure
 		Folder root = null;
 		root = new Folder(); // generate the folder trees
-		root.setPath(new File(baseDirectories.get(0)).getParentFile().getParent());
+		root.setPath(new File(baseDirectories.get(0)).getParentFile()
+				.getParent());
 		for (int i = 0; i < baseDirectories.size(); i++) {
-			Folder prod=new Folder();
+			Folder prod = new Folder();
 			prod.setPath(baseDirectories.get(i));
 			root.addFolder(prod);
 			for (int j = 0; j < sourceDirectories.size(); j++) {
@@ -143,10 +167,18 @@ public class Config {
 
 		// read in ccg mapping
 		ccgMap = new CCGMap(this.ccgMapFilePath);
-		ccgMap.generate(root);
+		
 
 		// read in boxcar mapping
 		boxcarMap = new BoxcarMap(this.boxcarMapFilePath);
+		
+
+		// read in the qa tests report
+		qrc = new QaReportCollection(this.qaTestsFolder);
+		qrc.makeFolder(Config.getBaseDir());
+		qrc.generateTestReport(Config.getBaseDir());
+		
+		ccgMap.generate(root);
 		boxcarMap.generate(root);
 
 		generateShellScript();
@@ -157,7 +189,6 @@ public class Config {
 
 		// boxcar script
 	}
-
 
 	public static File getRoot() {
 		return new File(Config.getBaseDir());

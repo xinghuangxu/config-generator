@@ -1,6 +1,10 @@
 package org.netapp.epg.qa;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class TestSet {
 	
@@ -14,8 +18,8 @@ public class TestSet {
 		this.name=name.replace("&", "&amp;");
 	}
 
-	public void add(String[] words, int i) {
-		tcc.add(words,i);
+	public void add(ResultSet words) throws SQLException {
+		tcc.add(words);
 	}
 
 
@@ -23,8 +27,9 @@ public class TestSet {
 		tcc.makeFolder(basePath+"/"+name);
 	}
 
-	public void generateTestReport(String classname, PrintWriter writer) {
+	public void generateTestReport(String classname, Writer writer) throws IOException {
 		tcc.generateTestReport(classname+"/"+name,writer);
 	}
+
 
 }

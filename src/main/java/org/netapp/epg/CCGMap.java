@@ -16,36 +16,8 @@ public class CCGMap {
 	private List<CCG> ccgs;
 	
 	public CCGMap(String filePath) {
-		//ccgs=new ArrayList<CCG>();
-		
 		CFWEmployeeDb dao = new CFWEmployeeDb();
 		ccgs=dao.readCcgCompData();
-//		try {
-//			System.out.println("Read Config File.");
-//			BufferedReader br = new BufferedReader(new FileReader(filePath));
-//			System.out.println("Read ccg-map.");
-//			br.readLine();
-//			String line = br.readLine();
-//			String[] row=line.split(",");
-//			CCG nccg=new CCG(row[0]);
-//			Component ncomponent=new Component(row[1]);
-//			ncomponent.setFolders(Folder.getMap().get(ncomponent.getName()));
-//			nccg.addComponent(ncomponent);
-//			while((line=br.readLine())!=null){
-//				row=line.split(",");
-//				if(!nccg.getName().equals(row[0])){
-//					ccgs.add(nccg);
-//					nccg=new CCG(row[0]);
-//				}
-//				ncomponent=new Component(row[1]);
-//				ncomponent.setFolders(Folder.getMap().get(ncomponent.getName()));
-//				nccg.addComponent(ncomponent);
-//			}
-//			ccgs.add(nccg);
-//			br.close();
-//		} catch (Exception ex) {
-//			System.out.println(ex.getMessage());
-//		}
 	}
 
 	public void generate(Folder root) {
@@ -78,7 +50,7 @@ public class CCGMap {
 			writer.println(sb.toString());
 			writer.println("sonar.coverity.source.path="+baseDir);
 			writer.close();
-			generateScript(sonarRunnerScript,baseDir.getParent().toString());
+			//generateScript(sonarRunnerScript,baseDir.getParent().toString());
 		}catch(Exception ex){
 			System.out.println(ex.getMessage());
 		}
@@ -86,13 +58,13 @@ public class CCGMap {
 	}
 
 	private void generateScript(String sonarRunnerScript,String basePath) throws FileNotFoundException {
-		File scriptFile=new File(sonarRunnerScript);
-		PrintWriter writer=new PrintWriter(scriptFile);
-		writer.print("cd ccg && sh "+Config.getSonnarRunnerPath());
-		writer.close();
-		File localScript =new File("ccg-run.sh");
-		writer=new PrintWriter(localScript);
-		writer.println("cd "+basePath+"/sonar && sh ccg-run.sh");
-		writer.close();
+//		File scriptFile=new File(sonarRunnerScript);
+//		PrintWriter writer=new PrintWriter(scriptFile);
+//		writer.print("cd ccg && sh "+Config.getSonnarRunnerPath());
+//		writer.close();
+//		File localScript =new File("ccg-run.sh");
+//		writer=new PrintWriter(localScript);
+//		writer.println("cd "+basePath+"/sonar && sh ccg-run.sh");
+//		writer.close();
 	}
 }

@@ -13,16 +13,22 @@ public class Boxcar {
 
 	private String CQID;
 	private String boxcarName;
+	private String almPrefix;
 
 	public String getName() {
 		return this.boxcarName;
+	}
+	
+	public String getAlmPrefix(){
+		return this.almPrefix;
 	}
 
 	private Map<String, Component> components;
 	private Map<String, CCG> ccgs;
 
-	public Boxcar(String CQID, String boxcarName) {
+	public Boxcar(String CQID, String boxcarName,String almPrefix) {
 		this.CQID = CQID;
+		this.almPrefix=almPrefix;
 		this.boxcarName = boxcarName.replace(" ", "_");
 		components = new HashMap<String, Component>();
 		ccgs = new HashMap<String, CCG>();
@@ -78,7 +84,7 @@ public class Boxcar {
 					+ "_bc_" + this.getName());
 			writer.println("sonar.projectName=Kingston_" + this.getName());
 			writer.println("sonar.projectVersion="
-					+ projectKey.substring(projectKey.length() - 5));
+					+ Config.getRoot().getName());
 			writer.println("sonar.language=c++");
 			writer.println("sonar.sourceEncoding=UTF-8");
 
@@ -98,10 +104,11 @@ public class Boxcar {
 								+ "/sonar-project.properties", "../../../../",
 						this.getName(), once, this.getName())){
 					modules.append(c.getName() + ",");
+					if (once)
+						once = !once;
 				}
 				
-				if (once)
-					once = !once;
+				
 			}
 			writer.println("sonar.modules="
 					+ modules.toString().substring(0, modules.length() - 1));

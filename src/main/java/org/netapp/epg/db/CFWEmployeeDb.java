@@ -1,13 +1,8 @@
 package org.netapp.epg.db;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,25 +11,25 @@ import org.netapp.epg.CCG;
 import org.netapp.epg.Component;
 import org.netapp.epg.Folder;
 
-public class CFWEmployeeDb {
-	private Connection connect = null;
-	private Statement statement = null;
-	private PreparedStatement preparedStatement = null;
-	private ResultSet resultSet = null;
+public class CFWEmployeeDb extends Database{
+
+	
+	public CFWEmployeeDb(){
+		this.driveclass="com.mysql.jdbc.Driver";
+	}
 
 	public void readDataBase() throws Exception {
 		try {
-			// this will load the MySQL driver, each DB has its own driver
-			Class.forName("com.mysql.jdbc.Driver");
-			// setup the connection with the DB.
-			connect = DriverManager
-					.getConnection("jdbc:mysql://ictmysql01.eng.netapp.com/CFW-Employee?"
-							+ "user=cfwreadonly&password=cfwreadonly");
+			String url="jdbc:mysql://ictmysql01.eng.netapp.com/CFW-Employee";
+			String userName="cfwreadonly";
+			String password="cfwreadonly";
+			this.createConnection(url,userName,password);
+			
 			// statements allow to issue SQL queries to the database
 			statement = connect.createStatement();
 			// resultSet gets the result of the SQL query
 			resultSet = statement
-					.executeQuery("SELECT CQID,boxcarname,compname FROM `CFW-Employee`.Boxcar_Component as bcc left join Boxcars as bc on bcc.boxcarCQID=bc.CQID left join components as c on bcc.componentid=c.compid ");
+					.executeQuery("SELECT CQID,ALMPrefix, boxcarname,compname FROM `CFW-Employee`.Boxcar_Component as bcc left join Boxcars as bc on bcc.boxcarCQID=bc.CQID left join components as c on bcc.componentid=c.compid ");
 			writeResultSet(resultSet);
 		} catch (Exception e) {
 			throw e;
@@ -71,7 +66,7 @@ public class CFWEmployeeDb {
 			statement = connect.createStatement();
 			// resultSet gets the result of the SQL query
 			resultSet = statement
-					.executeQuery("SELECT CQID,boxcarname,compname FROM `CFW-Employee`.Boxcar_Component as bcc left join Boxcars as bc on bcc.boxcarCQID=bc.CQID left join components as c on bcc.componentid=c.compid ORDER BY CQID");
+					.executeQuery("SELECT CQID,ALMPrefix,boxcarname,compname FROM `CFW-Employee`.Boxcar_Component as bcc left join Boxcars as bc on bcc.boxcarCQID=bc.CQID left join components as c on bcc.componentid=c.compid ORDER BY CQID");
 			// writeResultSet(resultSet);
 
 			return recordBoxcarCompData();
@@ -89,10 +84,11 @@ public class CFWEmployeeDb {
 		while (resultSet.next()) {
 			String cqId = resultSet.getString("CQID");
 			String boxcarname = resultSet.getString("boxcarname");
+			String almPrefix=resultSet.getString("ALMPrefix");
 			String compname = resultSet.getString("compname");
 			if (!tempId.equals(cqId)) {
 				tempId = cqId;
-				bc = new Boxcar(cqId, boxcarname);
+				bc = new Boxcar(cqId, boxcarname,almPrefix);
 				bcs.add(bc);
 			}
 			bc.addComp(compname);

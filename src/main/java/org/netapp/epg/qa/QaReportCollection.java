@@ -1,8 +1,11 @@
 package org.netapp.epg.qa;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.netapp.epg.Boxcar;
+import org.netapp.epg.BoxcarMap;
 
 
 
@@ -10,19 +13,26 @@ public class QaReportCollection {
 	
 	private static List<QaReport> qaReports=new ArrayList<QaReport>();
 	
-	private static String folderName="sonar-qa-tests";
+	private static String folderName="qa-tests";
 	
 	
 	public QaReportCollection(String path){
-		File directory = new File(path);
-		File[] fList = directory.listFiles();
-		if (fList != null) {
-			for (File file : fList) {
-				if (file.isFile()) {
-					qaReports.add(new QaReport(file));
-				}
-			}
+//		File directory = new File(path);
+//		File[] fList = directory.listFiles();
+//		if (fList != null) {
+//			for (File file : fList) {
+//				if (file.isFile()) {
+//					qaReports.add(new QaReport(file));
+//				}
+//			}
+//		}
+		
+		//loop through all the boxcars to get their current test cases
+		List<Boxcar> bcs=BoxcarMap.getAllBoxcars();
+		for(int i=0;i<bcs.size();i++){
+			qaReports.add(new QaReport(bcs.get(i).getName(),bcs.get(i).getAlmPrefix()));
 		}
+		
 	}
 
 	public void makeFolder(String basePath) {
@@ -31,7 +41,7 @@ public class QaReportCollection {
 		}
 	}
 
-	public void generateTestReport(String basePath) {
+	public void generateTestReport(String basePath) throws FileNotFoundException {
 		for(int i=0;i<qaReports.size();i++){
 			qaReports.get(i).generateTestReport(basePath+"/"+folderName);
 		}

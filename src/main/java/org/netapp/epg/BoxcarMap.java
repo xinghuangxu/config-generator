@@ -11,32 +11,17 @@ import org.netapp.epg.db.CFWEmployeeDb;
 
 public class BoxcarMap {
 
-	private List<Boxcar> boxcars;
+	private static List<Boxcar> boxcars;
+	
+	public static List<Boxcar> getAllBoxcars(){
+		return boxcars;
+	}
 
 	public BoxcarMap(String filePath) throws Exception {
 		boxcars = new ArrayList<Boxcar>();
 		//Database connect test
 		CFWEmployeeDb dao = new CFWEmployeeDb();
 		boxcars=dao.readBoxcarCompData();
-//		try {
-//			System.out.println("Read Boxcar Mapping File.");
-//			BufferedReader br = new BufferedReader(new FileReader(filePath));
-//			String line = br.readLine();
-//			while ((line = br.readLine()) != null) {
-//				String[] cells = line.split(",");
-//				if (cells.length > 2) {
-//					Boxcar bc = new Boxcar(cells[0], cells[1]);
-//					for (int i = 2; i < cells.length; i++) {
-//						bc.addSource(cells[i].replace("\"", ""));
-//					}
-//					boxcars.add(bc);
-//				}
-//			}
-//			br.close();
-//			System.out.println("Successfully Parsed Boxcar Mapping File.");
-//		} catch (Exception ex) {
-//			System.out.println(ex.getMessage());
-//		}
 	}
 
 	public void generate(Folder root) {
@@ -73,22 +58,22 @@ public class BoxcarMap {
 			writer.println(sb.toString());
 			writer.println("sonar.coverity.source.path=" + baseDir.getParent());
 			writer.close();
-			generateScript(sonarRunnerScript,baseDir.getParent().toString());
+			//generateScript(sonarRunnerScript,baseDir.getParent().toString());
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
 		}
 	}
 
 	private void generateScript(String sonarRunnerScript,String basePath) throws FileNotFoundException {
-		File scriptFile=new File(sonarRunnerScript);
-		PrintWriter writer=new PrintWriter(scriptFile);
-		writer.print("for dir in boxcar/*; do (cd \"$dir\" && sh "+Config.getSonnarRunnerPath()+"); done");
-		writer.close();
-		
-		File localScript =new File("boxcar-run.sh");
-		writer=new PrintWriter(localScript);
-		writer.println("cd "+basePath+"/sonar && sh boxcar-run.sh");
-		writer.close();
+//		File scriptFile=new File(sonarRunnerScript);
+//		PrintWriter writer=new PrintWriter(scriptFile);
+//		writer.print("for dir in boxcar/*; do (cd \"$dir\" && sh "+Config.getSonnarRunnerPath()+"); done");
+//		writer.close();
+//		
+//		File localScript =new File("boxcar-run.sh");
+//		writer=new PrintWriter(localScript);
+//		writer.println("cd "+basePath+"/sonar && sh boxcar-run.sh");
+//		writer.close();
 	}
 
 }

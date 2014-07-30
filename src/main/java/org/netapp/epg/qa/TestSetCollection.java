@@ -1,6 +1,10 @@
 package org.netapp.epg.qa;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,11 +14,12 @@ public class TestSetCollection {
 	
 	private HashMap<String,TestSet> testsetMap=new HashMap<String, TestSet>();
 
-	public void add(String[] words, int i) {
-		if(!testsetMap.containsKey(words[i])){
-			testsetMap.put(words[i], new TestSet(words[i]));
+	public void add(ResultSet words) throws SQLException {
+		String testset=words.getString("Test Set");
+		if(!testsetMap.containsKey(testset)){
+			testsetMap.put(testset, new TestSet(testset));
 		}
-		testsetMap.get(words[i]).add(words,i+1);
+		testsetMap.get(testset).add(words);
 	}
 
 	public void makeFolder(String basePath) {
@@ -26,7 +31,7 @@ public class TestSetCollection {
 	    }
 	}
 
-	public void generateTestReport(String classname, PrintWriter writer) {
+	public void generateTestReport(String classname, Writer writer) throws IOException {
 		Iterator<Entry<String, TestSet>> it = testsetMap.entrySet().iterator();
 	    while (it.hasNext()) {
 	        Map.Entry<String,TestSet> pairs = (Map.Entry<String,TestSet>)it.next();

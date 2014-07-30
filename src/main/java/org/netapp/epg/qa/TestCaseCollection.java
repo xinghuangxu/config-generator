@@ -1,6 +1,10 @@
 package org.netapp.epg.qa;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,11 +14,12 @@ public class TestCaseCollection extends QaGeneric{
 	
 	private HashMap<String, TestCase> testcaseMap=new HashMap<String, TestCase>();
 
-	public void add(String[] words, int i) {
-		if(!testcaseMap.containsKey(words[i])){
-			testcaseMap.put(words[i], new TestCase(words,i));
+	public void add(ResultSet words) throws SQLException {
+		String testcase=words.getString("Test Case");
+		if(!testcaseMap.containsKey(testcase)){
+			testcaseMap.put(testcase, new TestCase(words));
 		}else{
-			LOG.info("Duplication!"+words[i]);
+			LOG.info("Duplication!"+testcase);
 		}
 	}
 
@@ -27,7 +32,7 @@ public class TestCaseCollection extends QaGeneric{
 	    }
 	}
 
-	public void generateTestReport(String classname, PrintWriter writer) {
+	public void generateTestReport(String classname, Writer writer) throws IOException {
 		Iterator<Entry<String, TestCase>> it = testcaseMap.entrySet().iterator();
 	    while (it.hasNext()) {
 	        Map.Entry<String,TestCase> pairs = (Map.Entry<String,TestCase>)it.next();

@@ -1,6 +1,10 @@
 package org.netapp.epg.qa;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,11 +14,12 @@ public class TypeCollection {
 	
 	private HashMap<String, Type> typeMap=new HashMap<String, Type>();
 
-	public void add(String[] words, int i) {
-		if(!typeMap.containsKey(words[i])){
-			typeMap.put(words[i], new Type(words[i]));
+	public void add(ResultSet rs) throws SQLException {
+		String type=rs.getString("Type");
+		if(!typeMap.containsKey(type)){
+			typeMap.put(type, new Type(type));
 		}
-		typeMap.get(words[i]).add(words,i+1);
+		typeMap.get(type).add(rs);
 	}
 
 	public void makeFolder(String basePath) {
@@ -26,11 +31,11 @@ public class TypeCollection {
 	    }
 	}
 
-	public void generateTestReport(PrintWriter writer) {
+	public void generateTestReport(Writer writer,String reportName) throws IOException {
 		Iterator<Entry<String, Type>> it = typeMap.entrySet().iterator();
 	    while (it.hasNext()) {
 	        Map.Entry<String,Type> pairs = (Map.Entry<String,Type>)it.next();
-	        pairs.getValue().generateTestReport(writer);
+	        pairs.getValue().generateTestReport(writer,reportName);
 	        //it.remove(); // avoids a ConcurrentModificationException
 	    }
 	}
