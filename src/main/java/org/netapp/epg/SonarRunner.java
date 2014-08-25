@@ -6,8 +6,14 @@ import java.util.Scanner;
 public class SonarRunner {
 
 	public static void runCcg(String root) {
-		String ccgConfigPath = root + "/sonar/ccg";
-		SonarRunner.run(ccgConfigPath);
+		String bcConfigPath = root + "/sonar/ccg";
+		File bcFolder = new File(bcConfigPath);
+		File[] allccgs = bcFolder.listFiles();
+		for (int i = 0; i < allccgs.length; i++) {
+			if (allccgs[i].isDirectory()) {
+				SonarRunner.run(allccgs[i].getPath());
+			}
+		}
 	}
 
 	private static void run(String dirPath) {

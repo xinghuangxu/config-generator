@@ -1,4 +1,3 @@
-BaseDirectories=C:/Users/leonx/Desktop/sonar/32.84
-Sources=ect,FBDT,Fiber,iSCSI,MTLISER,MTLQLG,OFED_1,OFED_2,QLFC,RAID,RAID1
+BaseDirectories= ~/ccm_wa/symbios/RAIDCore_3284/RAIDCore-_leonx/IMT_Build
+Sources= ect,FBDT,Fiber,iSCSI,MTLISER,MTLQLG,OFED_1,OFED_2,QLFC,RAID,RAID1
 sonar.host.url=http://localhost:9000
-sonar.jdbc.url=jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8

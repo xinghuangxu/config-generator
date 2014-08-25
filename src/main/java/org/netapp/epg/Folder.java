@@ -13,6 +13,7 @@ public class Folder {
 	private String name;
 	private Component parent;
 	private List<Folder> subFolders;
+	private String prodName;
 	
 	public static Map<String, List<Folder>> getMap(){
 		return dic;
@@ -24,6 +25,10 @@ public class Folder {
 	
 	public Component getParent(){
 		return parent;
+	}
+	
+	public String getProdName() {
+		return this.prodName;
 	}
 	
 	public String getPath(){
@@ -45,20 +50,21 @@ public class Folder {
 		val.add(this);
 	}
 
-	public Folder() {
+	public Folder(String prodName) {
+		this.prodName=prodName;
 		subFolders = new ArrayList<Folder>();
 		this.parent=null;
 	}
 
-	public Folder(String path) { //loop through all the sub folders if you don't want it to do that please use the constructor above
-		this();
+	public Folder(String prodName,String path) { //loop through all the sub folders if you don't want it to do that please use the constructor above
+		this(prodName);
 		this.setPath(path);
 		File directory = new File(path);
 		File[] fList = directory.listFiles();
 		if (fList != null) {
 			for (File file : fList) {
 				if (file.isDirectory()) {
-					subFolders.add(new Folder(path + "/" + file.getName()));
+					subFolders.add(new Folder(prodName,path + "/" + file.getName()));
 				}
 			}
 		}
@@ -91,9 +97,11 @@ public class Folder {
 
 	
 	public Folder clone(){
-		Folder c=new Folder();
+		Folder c=new Folder(this.prodName);
 		c.name=this.name;
 		c.path=this.path;
 		return c;
 	}
+
+	
 }

@@ -23,7 +23,7 @@ public class App {
 
 		config.generateProperties();
 		//SonarRunner.runCcg(Config.getBaseDir());
-		SonarRunner.runBoxcar(Config.getBaseDir());
+		//SonarRunner.runBoxcar(Config.getBaseDir());
 		System.exit(0);
 		
 	}

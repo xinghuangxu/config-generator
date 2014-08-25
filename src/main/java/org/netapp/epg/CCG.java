@@ -42,42 +42,57 @@ public class CCG {
 		file.getParentFile().mkdirs();
 		try {
 			PrintWriter writer = new PrintWriter(file);
-			writer.println("sonar.projectKey=" + this.getName());
+			writer.println("sonar.projectKey=ccg_" + this.getName());
 			writer.println("sonar.projectName=" + this.getName());
 			// writer.println("sonar.projectVersion="+projectKey.substring(projectKey.length()));
 			writer.println("sonar.language=c++");
 			writer.println("sonar.sourceEncoding=UTF-8");
+			writer.println("sonar.projectVersion=1.0");
 
 			StringBuilder modules = new StringBuilder();
 			StringBuilder moduleInfos = new StringBuilder();
 			boolean once = true;
 			for (Component c : components) {
 				if (!c.isEmpty()) {
-					if (isWithTest && once) {
-						// test folder config
-						String qaTestName = QaReportCollection.hasTestFor(name);
-						if (qaTestName != "") {
-							writer.print(c.getName() + ".sonar.tests=");
-							writer.println(QaReportCollection
-									.getTestBaseFolder() + "/" + qaTestName);
-							writer.println(c.getName()
-									+ ".sonar.qa.reportPath="
-									+ QaReportCollection.getTestBaseFolder()
-									+ "/" + qaTestName + ".xml");
-							System.out.println("Test Config output to: "
-									+ this.getName() + ": " + c.getName());
-						} else {
-							writer.println();
-						}
-						// end test folder config
-						once = false;
-					}
+//					if(!c.getParent().getName().equals("VIOS")){
+//						writer.close();
+//						return true;
+//					}
+//					if(c.getName().equals("rpa")){
+//						System.out.println("Found rpa");
+//					}
 					c.deduplicate();
-					modules.append(c.getName() + ",");
-					moduleInfos.append(c.getName() + ".sonar.projectBaseDir="
-							+ level + "\n");
-					moduleInfos.append(c.getName() + ".sonar.sources="
-							+ c.getSources() + "\n");
+					c.generateSource(file.getParent());
+					
+					if (!c.isEmptyAfterMerge()) {
+						if (isWithTest && once) {
+							// test folder config
+							String qaTestName = QaReportCollection
+									.hasTestFor(name);
+							if (qaTestName != "") {
+								writer.print(c.getName() + ".sonar.tests=");
+								writer.println(QaReportCollection
+										.getTestBaseFolder() + "/" + qaTestName);
+								writer.println(c.getName()
+										+ ".sonar.qa.reportPath="
+										+ QaReportCollection
+												.getTestBaseFolder() + "/"
+										+ qaTestName + ".xml");
+								System.out.println("Test Config output to: "
+										+ this.getName() + ": " + c.getName());
+							} else {
+								writer.println();
+							}
+							// end test folder config
+							once = false;
+						}
+						modules.append(c.getName() + ",");
+						moduleInfos.append(c.getName()
+								+ ".sonar.projectBaseDir=src" + "\n");
+						moduleInfos.append(c.getName() + ".sonar.sources="
+								+ c.getSources() + "\n");
+					}
+
 				}
 			}
 			if (modules.length() == 0) {
@@ -94,6 +109,7 @@ public class CCG {
 					+ this.getName());
 			writer.close();
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			System.out.println("Generate Property File " + this.getName()
 					+ " Failed." + ex.getMessage());
 		}

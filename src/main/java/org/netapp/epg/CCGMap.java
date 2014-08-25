@@ -31,7 +31,7 @@ public class CCGMap {
 			PrintWriter writer=new PrintWriter(projectFile);
 			String projectKey=baseDir.getParentFile().getName();
 			writer.println("sonar.projectKey=epg.netapp.com:"+projectKey+".CCG");
-			writer.println("sonar.projectName=RAIDCore_Kingston");//_CCG_"+projectKey);
+			writer.println("sonar.projectName=ESSD by CCG");//_CCG_"+projectKey);
 			writer.println("sonar.projectVersion="+root.getName());
 			writer.println("sonar.language=c++");
 			writer.println("sonar.sourceEncoding=UTF-8");

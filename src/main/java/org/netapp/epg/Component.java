@@ -1,5 +1,6 @@
 package org.netapp.epg;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +13,9 @@ public class Component {
 	private static Map<String, Component> dic = new HashMap<String, Component>(); //easy look up
 	private String name;
 	private List<Folder> folders;
+	private List<String> srcs=new ArrayList<String>();
 	private CCG parent;
+	private Deduplicator dp;
 	
 	public static Map<String, Component> getMap(){
 		return dic;
@@ -65,6 +68,14 @@ public class Component {
 			return true;
 		return false;
 	}
+	
+	
+	public boolean isEmptyAfterMerge(){
+		if(srcs==null||srcs.size()==0){
+			return true;
+		}
+		return false;
+	}
 
 	/*
 	 * Get component sources 
@@ -72,10 +83,13 @@ public class Component {
 	 */
 	public String getSources() {
 		StringBuilder sb=new StringBuilder();
-		for(Folder f: folders){
-			sb.append(f.getRelativePath(Config.getRoot().getName())+",");
+		for(String s: srcs){
+			sb.append(s+",");
 		}
-		return sb.toString().substring(0,sb.length()-1);
+		if(sb.length()>0){
+			return sb.toString().substring(0,sb.length()-1);
+		}
+		return "";
 	}
 
 	public List<Folder> getFolders() {
@@ -83,8 +97,23 @@ public class Component {
 	}
 	
 	public void deduplicate(){
-		Deduplicator dp=new Deduplicator(folders);
+		this.dp=new Deduplicator(folders);
 		dp.deduplicate();
+	}
+
+	public void generateSource(String base) {
+		this.srcs=this.dp.generateSource(base,this.name);
+	}
+
+	public static String getSource(String cmpname, String key) {
+		File f=(new File(key)).getParentFile();
+		while(f!=null&&!f.getName().equals(cmpname)){
+			f=f.getParentFile();
+		}
+		if(f==null){
+			return "";
+		}
+		return f.getPath();
 	}
 
 }

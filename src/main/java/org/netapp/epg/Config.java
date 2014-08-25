@@ -34,6 +34,16 @@ public class Config {
 	private static Config config = null;
 
 	private String baseDir;
+	
+	private static List<String> prods=new ArrayList<String>();
+	
+	public static List<String> getProds(){
+		return prods;
+	}
+	
+	public static int getProdNum(){
+		return prods.size();
+	}
 
 	public static String getBaseDir() {
 		Config config = Config.getInstance();
@@ -83,7 +93,7 @@ public class Config {
 				dirs = file.list(new FilenameFilter() {
 					@Override
 					public boolean accept(File current, String name) {
-						if (name.equals("sonar"))
+						if (name.equals("sonar")||name.equals("qa-tests"))
 							return false;
 						return new File(current, name).isDirectory();
 					}
@@ -91,6 +101,7 @@ public class Config {
 			}
 			for (int i = 0; i < dirs.length; i++) {
 				baseDirectories.add(src + "/" + dirs[i] + "/Application");
+				prods.add(dirs[i]);
 			}
 
 			// read in the source
@@ -150,15 +161,15 @@ public class Config {
 
 		// generate the folder structure
 		Folder root = null;
-		root = new Folder(); // generate the folder trees
+		root = new Folder(""); // generate the folder trees
 		root.setPath(new File(baseDirectories.get(0)).getParentFile()
 				.getParent());
 		for (int i = 0; i < baseDirectories.size(); i++) {
-			Folder prod = new Folder();
+			Folder prod = new Folder(this.prods.get(i));
 			prod.setPath(baseDirectories.get(i));
 			root.addFolder(prod);
 			for (int j = 0; j < sourceDirectories.size(); j++) {
-				Folder nf = new Folder(baseDirectories.get(i) + "/"
+				Folder nf = new Folder(this.prods.get(i),baseDirectories.get(i) + "/"
 						+ sourceDirectories.get(j));
 				prod.addFolder(nf);
 			}
@@ -170,16 +181,16 @@ public class Config {
 		
 
 		// read in boxcar mapping
-		boxcarMap = new BoxcarMap(this.boxcarMapFilePath);
+		//boxcarMap = new BoxcarMap(this.boxcarMapFilePath);
 		
 
 		// read in the qa tests report
-		qrc = new QaReportCollection(this.qaTestsFolder);
-		qrc.makeFolder(Config.getBaseDir());
-		qrc.generateTestReport(Config.getBaseDir());
+//		qrc = new QaReportCollection(this.qaTestsFolder);
+//		qrc.makeFolder(Config.getBaseDir());
+//		qrc.generateTestReport(Config.getBaseDir());
 		
 		ccgMap.generate(root);
-		boxcarMap.generate(root);
+//		boxcarMap.generate(root);
 
 		generateShellScript();
 	}
